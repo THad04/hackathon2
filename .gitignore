@@ -1,0 +1,28 @@
+# Virtual environment (venv)
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Ignore logs & cache files
+*.log
+*.cache
+.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore environment & credentials (if any)
+.env
+secrets.json
+
+# Ignore large media files (videos, models, etc.)
+*.mp4
+*.avi
+*.mkv
+*.h5
+*.pth
+*.tflite
+
+# Ignore system-specific files
+Thumbs.db

@@ -11,18 +11,32 @@ const App = () => {
 
   const captureAndSendFrame = async () => {
     if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
-      const blob = await fetch(imageSrc).then((res) => res.blob());
+      // Create a canvas to manipulate the frame
+      const canvas = document.createElement("canvas");
+      const video = webcamRef.current.video;
+      const context = canvas.getContext("2d");
 
+      // Set the canvas size to 64x64 for resizing
+      canvas.width = 64;
+      canvas.height = 64;
+
+      // Draw the video frame onto the canvas at 64x64 resolution
+      context.drawImage(video, 0, 0, 64, 64);
+
+      // Convert the canvas content to a Blob (JPEG format)
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg"));
+
+      // Prepare the form data
       const formData = new FormData();
       formData.append("image", blob);
 
       try {
-        // Send frame to backend and receive prediction
+        // Send the resized frame to your backend API
         const response = await axios.post("http://127.0.0.1:5000/detect", formData, {
-          headers: { "Content-Type": "multipart/form-data" }, // ✅ Explicitly set Content-Type
+          headers: { "Content-Type": "multipart/form-data" },
         });
 
+        setPrediction(response.data.predicted_letter || "No prediction received");
       } catch (error) {
         console.error("Error receiving prediction:", error);
         setPrediction("Error receiving prediction.");

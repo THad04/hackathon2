@@ -1,9 +1,12 @@
-# Ignore training dataset
-dataset/newdataset/
-dataset/preprocessed_data.npz
+# Ignore dataset inside the backend folder
+asl-backend/dataset/
+
+# Ignore specific dataset files
+asl-backend/dataset/newdataset/
+asl-backend/dataset/preprocessed_data.npz
 
 # Ignore virtual environment
-venv/
+asl-backend/venv/
 
 # Ignore large model files (optional)
 *.h5

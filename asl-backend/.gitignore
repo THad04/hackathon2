@@ -3,3 +3,5 @@ asl_model.h5
 asl_model.h5
 dataset/*
 dataset/*
+dataset/*.npz
+venv/

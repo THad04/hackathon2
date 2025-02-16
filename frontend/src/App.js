@@ -15,12 +15,14 @@ const App = () => {
       const blob = await fetch(imageSrc).then((res) => res.blob());
 
       const formData = new FormData();
-      formData.append("frame", blob);
+      formData.append("image", blob);
 
       try {
         // Send frame to backend and receive prediction
-        const response = await axios.post("http://127.0.0.1:5000/detect", formData);
-        setPrediction(response.data.prediction || "No prediction received");
+        const response = await axios.post("http://127.0.0.1:5000/detect", formData, {
+          headers: { "Content-Type": "multipart/form-data" }, // ✅ Explicitly set Content-Type
+        });
+
       } catch (error) {
         console.error("Error receiving prediction:", error);
         setPrediction("Error receiving prediction.");

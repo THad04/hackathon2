@@ -1,7 +1,9 @@
-dataset/*
-asl_model.h5
-asl_model.h5
-dataset/*
-dataset/*
-dataset/*.npz
+# Ignore training dataset
+dataset/newdataset/
+dataset/preprocessed_data.npz
+
+# Ignore virtual environment
 venv/
+
+# Ignore large model files (optional)
+*.h5

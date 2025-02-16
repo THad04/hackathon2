@@ -15,11 +15,15 @@ CORS(app)
 model = load_model("asl_model.h5")
 
 # Load label map correctly from JSON
-with open("dataset/label_map.json", "r") as f:
+label_map_path = "dataset/label_map.json"
+if not os.path.exists(label_map_path):
+    raise FileNotFoundError(f"🚨 Label map file not found: {label_map_path}")
+
+with open(label_map_path, "r") as f:
     label_map = json.load(f)
 
 # Ensure label_map values are sorted properly for indexing
-index_to_label = {v: k for k, v in label_map.items()}  # Reverse mapping
+index_to_label = {v: k for k, v in sorted(label_map.items(), key=lambda x: x[1])}  # Reverse mapping
 print(f"✅ Label Mapping Loaded: {index_to_label}")
 
 # Initialize MediaPipe Hands
@@ -42,9 +46,16 @@ def detect_asl():
         os.remove(file_path)
         return jsonify({"error": "Invalid image file"}), 400
 
+    # Convert to RGB and resize
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image_resized = cv2.resize(image_rgb, (64, 64)) / 255.0  # Resize & Normalize
+    image_resized = cv2.resize(image_rgb, (64, 64)) / 255.0
+
+    # Expand dimensions to match model input shape
     input_data = np.expand_dims(image_resized, axis=0)  # Shape (1, 64, 64, 3)
+
+    # 🔍 Debugging: Print the shape of the input image before making a prediction
+    print(f"🔍 Input Image Shape Before Prediction: {input_data.shape}")
+    print(f"🖼️ First 5 Pixels: {input_data[0, 0, 0]}")  # Print some pixel values
 
     # Predict ASL letter
     prediction = model.predict(input_data)
@@ -56,14 +67,14 @@ def detect_asl():
     # Ensure predicted index is valid
     if predicted_index not in index_to_label:
         os.remove(file_path)
-        return jsonify({"error": "Prediction index out of range"}), 500
+        return jsonify({"error": "Prediction index out of range"}, 500)
 
     predicted_letter = index_to_label[predicted_index]  # Convert index to letter
 
     print(f"🔥 Final Prediction: {predicted_letter} (Confidence: {np.max(prediction):.2f})")
 
     os.remove(file_path)
-    return jsonify({"predicted_letter": predicted_letter})
+    return jsonify({"predicted_letter": predicted_letter, "confidence": float(np.max(prediction))})
 
 if __name__ == "__main__":
     app.run(debug=True)

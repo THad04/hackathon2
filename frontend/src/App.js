@@ -6,7 +6,7 @@ import "./App.css";
 const App = () => {
   const webcamRef = useRef(null);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [prediction, setPrediction] = useState("");
+  const [prediction, setPrediction] = useState("Waiting for answer...");
   let intervalRef = useRef(null);
 
   const captureAndSendFrame = async () => {
@@ -18,10 +18,12 @@ const App = () => {
       formData.append("frame", blob);
 
       try {
-        await axios.post("https://webhook.site/e4dadf41-fe60-4fda-bcd7-2e4da229bbd1", formData);
-        setPrediction("Frame sent successfully!");
+        // Send frame to backend and receive prediction
+        const response = await axios.post("https://webhook.site/e4dadf41-fe60-4fda-bcd7-2e4da229bbd1", formData);
+        setPrediction(response.data.prediction || "No prediction received");
       } catch (error) {
-        setPrediction("Failed to send frame.");
+        console.error("Error receiving prediction:", error);
+        setPrediction("Error receiving prediction.");
       }
     }
   };
@@ -29,7 +31,7 @@ const App = () => {
   const startStreaming = () => {
     if (!isStreaming) {
       setIsStreaming(true);
-      intervalRef.current = setInterval(captureAndSendFrame, 2000);
+      intervalRef.current = setInterval(captureAndSendFrame, 2000); // Sends a frame every 2 seconds
     }
   };
 
@@ -44,7 +46,6 @@ const App = () => {
   return (
     <div>
       <img src="/logo.png" alt="App Logo" className="logo" />
-      <h1>Sign Language Interpreter</h1>
       <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="webcam" />
       <div>
         <button onClick={startStreaming} className="start" disabled={isStreaming}>
@@ -54,7 +55,9 @@ const App = () => {
           Stop
         </button>
       </div>
-      <h2 className={isStreaming ? "active" : "stopped"}>{prediction}</h2>
+      <h2 className={`prediction ${isStreaming ? "active" : "stopped"}`}>
+        {prediction}
+      </h2>
     </div>
   );
 };

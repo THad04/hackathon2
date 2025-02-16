@@ -1,28 +1,37 @@
-# Virtual environment (venv)
+# Ignore Python virtual environment
 venv/
-env/
-*.pyc
-__pycache__/
+*/venv/
 
-# Ignore logs & cache files
+# Ignore dataset files (inside backend)
+asl-backend/dataset/
+asl-backend/dataset/*
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore model checkpoints (optional)
+asl-backend/*.h5
+asl-backend/*.npz
+
+# Ignore logs and temp files
 *.log
-*.cache
+*.tmp
 .DS_Store
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
+# Ignore frontend dependencies
+frontend/node_modules/
+frontend/node_modules/*
 
-# Ignore environment & credentials (if any)
+# Ignore environment files
 .env
-secrets.json
+*.env
 
-# Ignore large media files (videos, models, etc.)
-*.mp4
-*.avi
-*.mkv
-*.h5
-*.pth
-*.tflite
+# Ignore zip files and unnecessary archives
+*.zip
+*.jar
+*.tar.gz
 
-# Ignore system-specific files
+# Ignore system files
 Thumbs.db

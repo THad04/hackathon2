@@ -19,7 +19,7 @@ const App = () => {
 
       try {
         // Send frame to backend and receive prediction
-        const response = await axios.post("https://webhook.site/e4dadf41-fe60-4fda-bcd7-2e4da229bbd1", formData);
+        const response = await axios.post("http://127.0.0.1:5000/detect", formData);
         setPrediction(response.data.prediction || "No prediction received");
       } catch (error) {
         console.error("Error receiving prediction:", error);

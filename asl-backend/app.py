@@ -6,12 +6,21 @@ from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 from flask_cors import CORS
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
 
 # Load trained ASL model
 model = load_model("asl_model.h5")
+
+# Load label map correctly from JSON
+with open("dataset/label_map.json", "r") as f:
+    label_map = json.load(f)
+
+# Ensure label_map values are sorted properly for indexing
+index_to_label = {v: k for k, v in label_map.items()}  # Reverse mapping
+print(f"✅ Label Mapping Loaded: {index_to_label}")
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -27,36 +36,34 @@ def detect_asl():
     file_path = "uploaded_image.jpg"
     file.save(file_path)
 
-    # Read the image
+    # Read and preprocess the image
     image = cv2.imread(file_path)
     if image is None:
+        os.remove(file_path)
         return jsonify({"error": "Invalid image file"}), 400
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image_resized = cv2.resize(image_rgb, (64, 64)) / 255.0  # Resize & Normalize
+    input_data = np.expand_dims(image_resized, axis=0)  # Shape (1, 64, 64, 3)
 
-    # Process the image with MediaPipe
-    result = hands.process(image_rgb)
+    # Predict ASL letter
+    prediction = model.predict(input_data)
+    predicted_index = np.argmax(prediction)
 
-    if result.multi_hand_landmarks:
-        for hand_landmarks in result.multi_hand_landmarks:
-            # Convert to grayscale & preprocess for model
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            resized = cv2.resize(gray, (28, 28)) / 255.0  # Normalize
-            input_data = resized.reshape(1, 28, 28, 1)
+    print(f"🔍 Prediction Index: {predicted_index}")
+    print(f"📌 Available Labels: {index_to_label}")
 
-            # Predict ASL letter
-            prediction = model.predict(input_data)
-            predicted_label = np.argmax(prediction)
-            predicted_letter = chr(65 + predicted_label)  # Convert to A-Z letter
+    # Ensure predicted index is valid
+    if predicted_index not in index_to_label:
+        os.remove(file_path)
+        return jsonify({"error": "Prediction index out of range"}), 500
 
-            # Delete image after processing
-            os.remove(file_path)
+    predicted_letter = index_to_label[predicted_index]  # Convert index to letter
 
-            return jsonify({"predicted_letter": predicted_letter})
+    print(f"🔥 Final Prediction: {predicted_letter} (Confidence: {np.max(prediction):.2f})")
 
-    # Delete image if no hand was detected
     os.remove(file_path)
-    return jsonify({"error": "No hand detected"})
+    return jsonify({"predicted_letter": predicted_letter})
 
 if __name__ == "__main__":
     app.run(debug=True)

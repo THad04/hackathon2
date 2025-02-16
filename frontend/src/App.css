@@ -1,0 +1,160 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #2e5930, #a8b5ac, #e0f2e9, #8f9e94);
+  background-size: 300% 300%;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  animation: rollingGradient 8s ease infinite;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes rollingGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 150px; /* Increased size */
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  object-fit: cover;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(46, 89, 48, 0.6);
+  animation: pulse 3s infinite alternate;
+}
+
+.webcam {
+  border: none;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 1000px;
+  height: auto;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.2);
+  animation: fadeIn 2s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.webcam:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2), 0 0 40px rgba(255, 255, 255, 0.3);
+}
+
+.prediction {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 1.5s ease-out;
+}
+
+button {
+  padding: 16px 32px;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-45deg);
+  transition: left 0.5s ease;
+  z-index: 0;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button.start {
+  background: linear-gradient(135deg, #00796b, #004d40);
+}
+
+button.start:hover {
+  background: linear-gradient(135deg, #004d40, #00251a);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 121, 107, 0.8);
+}
+
+button.stop {
+  background: linear-gradient(135deg, #c62828, #8e0000);
+}
+
+button.stop:hover {
+  background: linear-gradient(135deg, #8e0000, #5c0000);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 0 30px rgba(198, 40, 40, 0.8);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.prediction {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-top: 20px;
+  padding: 15px 30px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.3);
+  animation: fadeInUp 1.5s ease-out;
+  transition: all 0.3s ease;
+}
+
+.prediction.active {
+  color: #00e676; /* Green for successful predictions */
+}
+
+.prediction.stopped {
+  color: #ff5252; /* Red for stopped state or errors */
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
